@@ -15,12 +15,10 @@ class MiningTruck():
         self.load_count = 0 # loads delivered
 
     def start_mine(self):
-        
         self.state = "mining"
         mining_time = random.uniform(1, 5) # Mining trucks can spend a random duration between 1 to 5 hours mining at sites
         self.time_remaining = mining_time
         #print('Start mine for truck ', self.id)
-
     
     def start_travel_to_station(self):
         self.state = 'travel_to_station'
