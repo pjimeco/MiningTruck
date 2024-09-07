@@ -3,7 +3,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class MiningTruck():
+    """
+    Represents a mining truck in the simulation.
+    """
     def __init__(self,id):
+        """
+        Initializes a MiningTruck instance.
+
+        Args:
+            id (int): The unique identifier for the truck.
+        """
         self.id = id # Every Truck will have an ID
         self.state = 'unstarted' #initial state of truck
         self.time_mining = 0.0 # total time spent loading in the simulation
@@ -15,46 +24,96 @@ class MiningTruck():
         self.load_count = 0 # loads delivered
 
     def start_mine(self):
+        """
+        Starts the mining process for the truck.
+        Sets the truck state to 'mining' and assigns a random mining time.
+        """
         self.state = "mining"
         mining_time = random.uniform(1, 5) # Mining trucks can spend a random duration between 1 to 5 hours mining at sites
         self.time_remaining = mining_time
         #print('Start mine for truck ', self.id)
     
     def start_travel_to_station(self):
+        """
+        Starts the travel process to the unload station.
+        Sets the truck state to 'travel_to_station' and assigns travel time.
+        """
         self.state = 'travel_to_station'
         self.time_remaining = 0.5 #30 minutes to travel to station
         #print('Start travel to station for truck ', self.id)
 
     def start_wait(self, wait_time):
+        """
+        Starts the waiting process at the unload station.
+
+        Args:
+            wait_time (float): Time to wait in the queue, in hours.
+        """
         self.state = 'waiting'
         self.time_remaining = wait_time
         #print('Start wait for truck ', self.id,'waiting ', wait_time)
 
     def start_unload(self):
+        """
+        Starts the unloading process at the unload station.
+        Sets the truck state to 'unloading' and assigns unload time.
+        """
         self.state = 'unloading'
         self.time_remaining = 5.0/60.0 # 5 minutes to unload
         #print('Start unload for truck ', self.id)
 
 
     def start_travel_to_site(self):
+        """
+        Starts the travel process to the mining site.
+        Sets the truck state to 'travel_to_mine' and assigns travel time.
+        """
         self.state = 'travel_to_mine'
         self.time_remaining = 0.5 # 30 minutes to travel to station
         #print('Start travel to Mine for truck ', self.id)
 
 class UnloadStation():
+    """
+     Represents an unload station where trucks unload their cargo.
+    """
     def __init__(self,id):
+        """
+        Initializes an UnloadStation instance.
+
+        Args:
+            id (int): The unique identifier for the station.
+        """
         self.id = id #Every Station will have an ID
         self.queue = [] # Queue of trucks waiting to Unload at that particular station
         self.trucks_unloaded_count = 0
 
     def add_truck(self,truck):
+        """
+        Adds a truck to the unload station's queue.
+
+        Args:
+            truck (MiningTruck): The truck to be added to the queue.
+        """
         self.queue.append(truck)
 
-    def remove_truck(self): 
+    def remove_truck(self):
+        """
+        Removes the truck at the front of the queue.
+        """ 
         self.queue.pop(0)
 
 class Operation():
+    """
+    Manages the simulation of mining trucks and unload stations.
+    """
     def __init__(self, truck_count, station_count):
+        """
+        Initializes an Operation instance.
+
+        Args:
+            truck_count (int): Number of mining trucks in the simulation.
+            station_count (int): Number of unload stations in the simulation.
+        """
         self.trucks = [MiningTruck(i) for i in range(truck_count)]
         self.stations = [UnloadStation(i) for i in range(station_count)]
         self.simulation_time = 0.0 # Start at 0 
@@ -67,6 +126,9 @@ class Operation():
 
 
     def simulate(self):
+        """
+        Runs the simulation loop, updating truck and station states based on time steps.
+        """
         while self.simulation_time < self.max_time:
             #print(self.simulation_time)
             
@@ -131,9 +193,24 @@ class Operation():
             self.simulation_time += self.time_step
 
     def find_min_wait_station(self):
+        """
+        Finds the unload station with the minimum queue length.
+
+        Returns:
+            UnloadStation: The unload station with the shortest queue.
+        """
         return min(self.stations, key=lambda station: len(station.queue))
     
     def calculate_wait_time(self, station):
+        """
+        Calculates the wait time for a truck at a specific unload station.
+
+        Args:
+            station (UnloadStation): The unload station where the truck is waiting.
+
+        Returns:
+            float: Estimated wait time in hours.
+        """
 
         # Time remaining for the truck at the front of the queue
         front_truck = station.queue[0]
@@ -147,6 +224,9 @@ class Operation():
     
 
     def report_statistics(self):
+        """
+        Reports and prints statistics for trucks and unload stations.
+        """
         #TODO - see what other truck stats may be good
         print("=== Truck Statistics ===")
         for truck in self.trucks:
@@ -170,6 +250,9 @@ class Operation():
 
     # Update the plotting function
     def plot_statistics(self):
+        """
+        Plots statistics for truck times and loads per station.
+        """
         # Plot Truck Times Distribution
         truck_ids = list(self.truck_times.keys())
         n_trucks = len(truck_ids)
